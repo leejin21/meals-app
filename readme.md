@@ -16,9 +16,7 @@ Otherwise, the app will show error realted to the sdk version. The only way to f
 
 If the screen shows "Open up App.js to start working on your app!", we are done of setting.
 
-## 2. Navigation
-
-### (1) use specific fonts
+## 2. Use specific fonts and about async
 
 ```bash
 npm install --save expo-font
@@ -60,3 +58,98 @@ export default function App() {
     );
 }
 ```
+
+## 3. Navigation
+
+### (1) download the packages
+
+```bash
+# At the project directory
+npm install --save react-navigation
+# go to reactnavigation.org, and copy paste installing dependencies into an Expo managed project code.
+expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
+```
+
+Make new folder called `/navigation`, and make new js file called `MealsNavigator.js`.
+Also, if using react navigation v4 or higher, must install the followings in the cmd under our root folder: `meals-app`.
+
+```bash
+npm install --save react-navigation-stack
+# add `import { createStackNavigator } from 'react-navigation-stack';`
+npm install --save react-navigation-tabs
+# add `import { createBottomTabNavigator } from 'react-navigation-tabs';`
+npm install --save react-navigation-drawer
+# add `import { createDrawerNavigator } from 'react-navigation-drawer';`
+```
+
+> `createStackNavigator`의 경우, `react-navigation` 라이브러리에 `createAppContainer`와 같이 쓰면 안된다.
+
+즉,
+
+```js
+import { createAppContainer, createStackNavigator } from "react-navigation";
+```
+
+이렇게 쓰면 안되고,
+
+```js
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+```
+
+이렇게 써야 한다.
+
+### (2)
+
+> /navigation/MealsNavigator.js
+
+```js
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+
+import CategoriesScreen from "../screens/CategoriesScreen";
+import CategoryMealsScreen from "../screens/CategoryMealsScreen";
+import MealsDetailScreen from "../screens/MealDetailScreen";
+
+const MealsNavigator = createStackNavigator({
+    // 아래 코드가 shortcut(짧은 버전)
+    Categories: CategoriesScreen,
+    // 아래 코드가 longer version
+    CategoryMeals: {
+        screen: CategoryMealsScreen,
+    },
+    MealDetail: MealsDetailScreen,
+});
+
+// react navigation은 appContainer을 만들어야함.
+export default createAppContainer(MealsNavigator);
+```
+
+> screens\CategoriesScreen.js
+
+```js
+// Can select the food category
+import React from "react";
+import { View, Text, StyleSheet, Button } from "react-native";
+
+const CategoriesScreen = (props) => {
+    return (
+        <View style={styles.screen}>
+            <Text>The Categories Screen</Text>
+            <Button
+                title="Go to Meals!"
+                onPress={() => {
+                    props.navigation.navigate({ routeName: "CategoryMeals" });
+                    // props.navigation.navigate('CategoryMeals')
+                    // 과 동일한 의미의 코드. 둘이 같은 의미를 가지고 있기 때문에 뭘 써도 상관이 없다고 함(Alternative navigation Syntax)
+                }}
+            ></Button>
+        </View>
+    );
+};
+const styles = StyleSheet.create({});
+
+export default CategoriesScreen;
+```
+
+여기에서 props.navigation.navigate의 routeName key에 대응하는 value값에는 MealsNavigator.js의 createStackNavigator에서 썼던 key값을 string으로 감싸서 쓴다.
