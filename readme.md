@@ -1,7 +1,6 @@
 # meals app
 
-In this app, I will practice how to navigate around screens.
-The main function of this app will be showing the recipes and visualize them by dividing them in various kinds.
+In this app, I will practice how to navigate around screens. The main function of this app will be showing the recipes and visualize them by dividing them in various kinds.
 
 ## 1. Environmental settings
 
@@ -11,8 +10,7 @@ The main function of this app will be showing the recipes and visualize them by 
 | :-----: | :--------------------------: | :-------: |
 | 3.21.12 |              38              |   8.2.1   |
 
-Make sure the expo client app's sdk version in your virtual devices or your real phone includes 38.
-Otherwise, the app will show error realted to the sdk version. The only way to fix this error is updating your expo client app.
+Make sure the expo client app's sdk version in your virtual devices or your real phone includes 38. Otherwise, the app will show error realted to the sdk version. The only way to fix this error is updating your expo client app.
 
 If the screen shows "Open up App.js to start working on your app!", we are done of setting.
 
@@ -72,8 +70,7 @@ npm install --save react-navigation
 expo install react-native-gesture-handler react-native-reanimated react-native-screens react-native-safe-area-context @react-native-community/masked-view
 ```
 
-Make new folder called `/navigation`, and make new js file called `MealsNavigator.js`.
-Also, if using react navigation v4 or higher, must install the followings in the cmd under our root folder: `meals-app`.
+Make new folder called `/navigation`, and make new js file called `MealsNavigator.js`. Also, if using react navigation v4 or higher, must install the followings in the cmd under our root folder: `meals-app`.
 
 ```bash
 npm install --save react-navigation-stack
@@ -201,3 +198,151 @@ const MealDetailScreen = (props) => {
 ```
 
 ++ replace method: 현재 스택을 다른 스택으로 바꿔치기하기.
+
+### (3) Categorys: using flatlist
+
+> /data/dummy-data.js
+
+```js
+import Category from "../models/category";
+
+export const CATEGORIES = [
+    new Category("c1", "Italian", "#f5428d"),
+    new Category("c2", "Quick & Easy", "#f54242"),
+    new Category("c3", "Hamburgers", "#f5a442"),
+    new Category("c4", "German", "#f5d142"),
+    new Category("c5", "Light & Lovely", "#368dff"),
+    new Category("c6", "Exotic", "#41d95d"),
+    new Category("c7", "Breakfast", "#9eecff"),
+    new Category("c8", "Asian", "#b9ffb0"),
+    new Category("c9", "French", "#ffc7ff"),
+    new Category("c10", "Summer", "#47fced"),
+];
+```
+
+> /models/category.js
+
+```js
+class Category {
+    constructor(id, title, color) {
+        this.id = id;
+        this.title = title;
+        this.color = color;
+    }
+}
+
+// 아래 코드 생략하면 에러 뜸: ios, android 각기 다른 에러 뜸(이건 이유 못 알아냄)
+export default Category;
+```
+
+> /constants/Colors.js
+
+```js
+export default {
+    primary: "#4a148c",
+    accent: "#ffcf00",
+};
+```
+
+> /screens/CategoriesScreen.js
+
+```js
+import { CATEGORIES } from "../data/dummy-data";
+import Colors from "../constants/Colors";
+
+const CategoriesScreen = (props) => {
+    const renderGridItem = (itemData) => {
+        return (
+            <TouchableOpacity
+                style={styles.gridItem}
+                onPress={() => {
+                    props.navigation.navigate({ routeName: "CategoryMeals" });
+                }}
+            >
+                <View>
+                    <Text>{itemData.item.title}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
+    console.log(props);
+    return <FlatList keyExtractor={(item, index) => item.id} data={CATEGORIES} renderItem={renderGridItem} numColumns={2}></FlatList>;
+};
+```
+
+### (4) option: header styles and title(navigationOptions)
+
+> \screens\CategoryMealsScreen.js
+
+```js
+import { CATEGORIES } from "../data/dummy-data";
+import Colors from "../constants/Colors";
+
+const CategoryMealsScreen = (props) => {
+    // 편의상 생략
+};
+
+CategoryMealsScreen.navigationOptions = (navigationData) => {
+    // navigationData과 CategoryMealsScreen.props가 동일한 내용임.
+    const catId = navigationData.navigation.getParam("categoryId");
+    const selectedCategory = CATEGORIES.find((cat) => cat.id === catId);
+
+    return {
+        headerTitle: selectedCategory.title,
+        headerStyle: {
+            backgroundColor: Platform.OS === "android" ? Colors.primary : "",
+        },
+        headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+    };
+};
+
+// 나머지도 편의상 생략
+```
+
+매번 모든 스크린에 이 코드를 반복 적용할 수 없으므로
+
+> \navigation\MealsNavigator.js
+
+에서 아래와 같이 적용하여 중복을 없앤다.
+
+```js
+// import 생략
+const MealsNavigator = createStackNavigator(
+    {
+        // 아래 코드가 shortcut(짧은 버전)
+        Categories: CategoriesScreen,
+        // 아래 코드가 longer version
+        CategoryMeals: {
+            screen: CategoryMealsScreen,
+        },
+        MealDetail: MealsDetailScreen,
+    },
+    {
+        // createStackNavigator의 두번쨰 인자에 쓰인 defaultNavigationOptions는 세팅한 모든 요소들에 대해 디폴트 값을 세팅해 준다. 그런데 해당 스크린에서 설정을 따로 해 주면 그 설정이 우선순위가 앞선다.
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: Platform.OS === "android" ? Colors.primary : "",
+            },
+            headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+        },
+    }
+);
+// export 생략
+```
+
+### (5) react-native-screens
+
+```bash
+npm install --save react-native-screens
+```
+
+/App.js 에서
+
+```js
+// 아래 줄은 추가하지 않아도 됨. 아주 약간의 performance 향상이 있을 뿐.
+import { enableScreens } from "react-native-screens";
+
+import MealsNavigator from "./navigation/MealsNavigator";
+
+enableScreens();
+```

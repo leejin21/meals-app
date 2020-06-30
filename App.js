@@ -3,8 +3,12 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { AppLoading } from "expo";
 import * as Font from "expo-font";
+// 아래 줄은 추가하지 않아도 되지만 아주 약간의 performance 향상이 있다.
+import { enableScreens } from "react-native-screens";
 
 import MealsNavigator from "./navigation/MealsNavigator";
+
+enableScreens();
 
 const fetchFonts = () => {
     Font.loadAsync({
