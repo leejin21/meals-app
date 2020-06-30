@@ -31,6 +31,8 @@ import * as Font from "expo-font";
 
 > AppLoading component and Font.loadAsync
 
+Also, download open-sans font from the zip folder and place it under `/assets/fonts/` .
+
 ```js
 // App.js
 
@@ -99,7 +101,7 @@ import { createStackNavigator } from "react-navigation-stack";
 
 이렇게 써야 한다.
 
-### (2)
+### (2) importation and props navigation methods
 
 > /navigation/MealsNavigator.js
 
@@ -153,3 +155,49 @@ export default CategoriesScreen;
 ```
 
 여기에서 props.navigation.navigate의 routeName key에 대응하는 value값에는 MealsNavigator.js의 createStackNavigator에서 썼던 key값을 string으로 감싸서 쓴다.
+
+> screens\CategoriyMealsScreen.js
+
+pop method, goBack method
+
+```js
+const CategoryMealsScreen = (props) => {
+    return (
+        <View style={styles.screen}>
+            {/* 생략 */}
+            <Button
+                title="Go back"
+                onPress={() => {
+                    props.navigation.goBack();
+                    // props.navigation.pop();
+                    // pop의 경우 stackNavigator의 경우에 쓰임.
+                }}
+            ></Button>
+        </View>
+    );
+};
+```
+
+> screens\MealDetailScreen.js
+
+popToTop method: 제일 처음(가장 밑) 스택을 제외하고 나머지를 다 pop하기
+
+```js
+const MealDetailScreen = (props) => {
+    return (
+        <View style={styles.screen}>
+            <Text>The Meal Details Screen</Text>
+            <Button
+                title="go back to the first screen"
+                onPress={() => {
+                    props.navigation.popToTop();
+                }}
+            ></Button>
+        </View>
+    );
+};
+
+// 이외는 다 생략
+```
+
+++ replace method: 현재 스택을 다른 스택으로 바꿔치기하기.
