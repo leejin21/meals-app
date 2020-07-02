@@ -22,14 +22,15 @@ export default function App() {
 
     if (!fontLoaded) {
         return <AppLoading startAsync={fetchFonts} onFinish={() => setFontLoaded(true)} />;
+    } else {
+        // else문 넣어야 used it before it finished loading 에러가 안 뜸
+        return <MealsNavigator />;
     }
-    return <MealsNavigator />;
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
     },
