@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
         height: 150,
         borderRadius: 10,
         overflow: "hidden",
+        marginVertical: 10,
     },
     container: {
         flex: 1,
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
         alignItems: "flex-end",
     },
     title: {
+        // FIXME: 아래 거 주석처리하고 켜야 함:
         fontFamily: "open-sans-bold",
         fontSize: 23,
         textAlign: "right",

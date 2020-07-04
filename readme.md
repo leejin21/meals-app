@@ -346,3 +346,80 @@ import MealsNavigator from "./navigation/MealsNavigator";
 
 enableScreens();
 ```
+
+### (6) react-navigation-header-buttons package
+
+```js
+// meals-app\screens\MealDetailScreen.js
+MealDetailScreen.navigationOptions = (navigationData) => {
+    const mealId = navigationData.navigation.getParam("mealId");
+    const selectedMeal = MEALS.find((meal) => meal.id === mealId);
+    return { headerTitle: selectedMeal.title, headerRight: <Text>Fav!</Text> };
+};
+```
+
+이렇게 하면 아이콘이나 그런 걸 정해진 규격 안에 못 쓴다는 단점이 있음
+
+따라서 cmd창에 root directory하에서 `npm install --save react-navigation-header-buttons`를 해주고
+
+> meals-app\components\HeaderButton.js
+
+를 생성해 준다.
+
+```js
+import React from "react";
+import { Platform } from "react-native";
+import { HeaderButton } from "react-navigation-header-buttons";
+import { Ionicons } from "@expo/vector-icons";
+
+import Colors from "../constants/Colors";
+
+const CustomHeaderButton = (props) => {
+    // TODO: 이게 무슨 의미로 {...props} 인지, 알아봐야 할 듯
+    return <HeaderButton {...props} IconComponent={Ionicons} iconSize={23} color={Platform.OS === "android" ? "white" : Colors.primary} />;
+};
+
+export default CustomHeaderButton;
+```
+
+> meals-app\screens\MealDetailScreen.js
+
+```js
+MealDetailScreen.navigationOptions = (navigationData) => {
+    const mealId = navigationData.navigation.getParam("mealId");
+    const selectedMeal = MEALS.find((meal) => meal.id === mealId);
+    return {
+        headerTitle: selectedMeal.title,
+        headerRight: (
+            <HeaderButtons HeaderButtonComponent={HeaderButton}>
+                {/* 여기서 미리 custom으로 만들어둔 headerbutton을 불러둠*/}
+                <Item
+                    title="Favorite"
+                    // iconName을 찾아서 알아서 쓴다고 함...
+                    iconName="ios-star"
+                    onPress={() => {
+                        console.log("Mark as favorite!");
+                    }}
+                />
+                <Item
+                    // title은 key로 작동하기 때문에 겹치지 않아야 한다고 함.
+                    title="Favorite2"
+                    iconName="ios-star-outline"
+                    onPress={() => {
+                        console.log("Mark as favorite!");
+                    }}
+                />
+            </HeaderButtons>
+        ),
+    };
+};
+```
+
+또한 terminal에
+
+```
+headerRight: <SomeElement />' will be removed in a future version. Use
+'headerRight: () => <SomeElement />' instead
+```
+
+로 경고가 나타나는 것을 고려했을 때, arrow function 형식으로 써야 하는 게 맞을 듯하다.
