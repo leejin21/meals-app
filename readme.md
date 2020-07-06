@@ -423,3 +423,59 @@ headerRight: <SomeElement />' will be removed in a future version. Use
 ```
 
 로 경고가 나타나는 것을 고려했을 때, arrow function 형식으로 써야 하는 게 맞을 듯하다.
+
+### (6) 하단 바 만들어주기
+
+바 생성부터 해 보자.
+
+> meals-app\navigation\MealsNavigator.js
+
+```js
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
+import { createBottomTabNavigator } from "react-navigation-tabs";
+
+import FavoritesScreen from "../screens/FavoriteScreen";
+// 생략
+
+const MealsNavigator = createStackNavigator({}, {});
+// 생략
+
+const MealsFavTabNavigator = createBottomTabNavigator({
+    Meals: MealsNavigator,
+    Favorites: FavoritesScreen,
+});
+
+// 어차피 하나로 묶여있으므로.
+export default createAppContainer(MealsFavTabNavigator);
+```
+
+여기에 아이콘을 붙이는 코드를 추가해보자.
+
+```js
+const MealsFavTabNavigator = createBottomTabNavigator(
+    {
+        Meals: {
+            screen: MealsNavigator,
+            navigationOptions: {
+                tabBarIcon: (tabInfo) => {
+                    // color={tabInfo.tintColor}는 현재 tab의 tint된 color를 가져온다.
+                    return <Ionicons name="ios-restaurant" size={25} color={tabInfo.tintColor} />;
+                },
+            },
+        },
+        Favorites: {
+            screen: FavoritesScreen,
+            navigationOptions: {
+                // tabBarLable로 하단 바의 tab 이름을 바꿀 수 있다.
+                tabBarLabel: "Favorites!",
+                tabBarIcon: (tabInfo) => {
+                    return <Ionicons name="ios-star" size={25} color={tabInfo.tintColor} />;
+                },
+            },
+        },
+    },
+    // createBottomTabNavigator의 두번째 인자
+    { tabBarOptions: { activeTintColor: Colors.accent } }
+);
+```
