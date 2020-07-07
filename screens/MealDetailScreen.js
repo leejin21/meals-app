@@ -8,7 +8,7 @@ import HeaderButton from "../components/HeaderButton";
 
 const MealDetailScreen = (props) => {
     return (
-        <View style={styles.screen}>
+        <View style={styles.mealdetail}>
             <Text>The Meal Details Screen</Text>
             <Button
                 title="go back to the first screen"
@@ -25,7 +25,7 @@ MealDetailScreen.navigationOptions = (navigationData) => {
     const selectedMeal = MEALS.find((meal) => meal.id === mealId);
     return {
         headerTitle: selectedMeal.title,
-        headerRight: (
+        headerRight: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButton}>
                 <Item
                     title="Favorite"
@@ -47,7 +47,7 @@ MealDetailScreen.navigationOptions = (navigationData) => {
 };
 
 const styles = StyleSheet.create({
-    screen: {
+    mealdetail: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",

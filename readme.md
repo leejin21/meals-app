@@ -433,6 +433,8 @@ headerRight: <SomeElement />' will be removed in a future version. Use
 ```js
 import { createAppContainer } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
+
+// 아래 코드를 위해 npm install --save react-navigation-tabs 터미널창에 하기
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
 import FavoritesScreen from "../screens/FavoriteScreen";
@@ -478,4 +480,50 @@ const MealsFavTabNavigator = createBottomTabNavigator(
     // createBottomTabNavigator의 두번째 인자
     { tabBarOptions: { activeTintColor: Colors.accent } }
 );
+```
+
+안드로이드에서 shifting effect를 주는 코드로 수정해보자.
+
+```js
+const tabScreenConfig = {
+    Meals: {
+        screen: MealsNavigator,
+        navigationOptions: {
+            // 생략
+            tabBarColor: Colors.primary,
+        },
+    },
+    Favorites: {
+        screen: FavoritesScreen,
+        navigationOptions: {
+            // 생략
+            tabBarColor: Colors.accent,
+        },
+    },
+};
+
+const MealsFavTabNavigator =
+    Platform.OS === "android"
+        ? createMaterialBottomTabNavigator(tabScreenConfig, {
+              activeColor: "white",
+              shifting: true,
+              // if shifting is true, then barstyle 적용 안됨.
+              // 반대로 shifting is false, then barstyle 적용됨.
+              barStyle: {
+                  backgroundColor: Colors.primary,
+              },
+          })
+        : createBottomTabNavigator(tabScreenConfig, { tabBarOptions: { activeTintColor: Colors.accent } });
+```
+
+### (7) 옆 바 만들어주기
+
+`npm install --save react-navigation-drawer`을 통해 react-navigation-drawer을 만들어준다.
+이후
+
+> meals-app\navigation\MealsNavigator.js
+
+```js
+// 나머지 생략
+import { createDrawerNavigator } from "react-navigation-drawer";
 ```
