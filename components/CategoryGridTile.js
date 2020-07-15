@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     },
     title: {
         // FIXME: 아래 거 주석처리하고 켜야 함:
-        // fontFamily: "open-sans-bold",
+        fontFamily: "open-sans-bold",
         fontSize: 23,
         textAlign: "right",
     },
